@@ -2,11 +2,11 @@
   <div class="text-xs">
     <v-dialog v-model="dialog" width="500">
       <template v-slot:activator="{ on }">
-        <div v-on="on">Pseudo Colorização</div>
+        <div v-on="on">Pseudocolorização</div>
       </template>
 
       <v-card>
-        <v-card-title class="headline" primary-title>Pseudo Colorização</v-card-title>
+        <v-card-title class="headline" primary-title>Pseudocolorização</v-card-title>
 
         <!-- CONTEÚDO DO DIALOG -->
         <v-card-text>

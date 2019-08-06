@@ -63,6 +63,19 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+
+        <!-- FILTROS -->
+        <v-list-tile @click.stop>
+          <v-list-tile-action>
+            <v-icon color="teal darken-1">filter</v-icon>
+          </v-list-tile-action>
+
+          <v-list-tile-content>
+            <v-list-tile-title class="teal--text">
+              <dialog-filters></dialog-filters>
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
 
@@ -87,6 +100,7 @@ import DialogOperations from "./dialogs/DialogOperations";
 import DialogColorSpace from "./dialogs/DialogColorSpace"
 import DialogPseudoColorization from "./dialogs/DialogPseudoColorization"
 import DialogEnhancement from "./dialogs/DialogEnhancement"
+import DialogFilters from "./dialogs/DialogFilters"
 import DialogShortcuts from "./dialogs/DialogShortcuts";
 import DialogConfigurations from "./dialogs/DialogConfigurations";
 
@@ -98,6 +112,7 @@ export default {
     DialogColorSpace,
     DialogPseudoColorization,
     DialogEnhancement,
+    DialogFilters,
     DialogShortcuts,
     DialogConfigurations
   },

@@ -52,13 +52,14 @@
 
         <v-card-actions>
           <v-btn :disabled="step === 1" flat @click="step--">Voltar</v-btn>
-          <v-spacer></v-spacer>
+
           <v-switch
             color="teal darken-1"
             v-model="normalize"
             :label=" normalize ? 'Normalizando' : 'Truncando'"
             @click.prevent.stop="operationMode()"
           ></v-switch>
+          <v-spacer></v-spacer>
           <v-btn color="teal darken-1" flat @click="dialog = false">Fechar</v-btn>
         </v-card-actions>
       </v-card>
@@ -73,8 +74,8 @@ export default {
   computed: {
     normalize() {
       return this.$store.getters.normalize;
-    }, 
-    
+    },
+
     secondaryImageList() {
       return this.$store.getters.secondaryImageList;
     }
@@ -89,9 +90,9 @@ export default {
   },
 
   methods: {
-    operationMode(){
-      this.$store.commit("OPERATION_MODE", this.$store.getters.normalize)
-    }, 
+    operationMode() {
+      this.$store.commit("OPERATION_MODE", this.$store.getters.normalize);
+    },
 
     selectSecondaryImage(image) {
       this.secondaryImage = image;
