@@ -54,7 +54,7 @@
         <!-- REALCE -->
         <v-list-tile @click.stop>
           <v-list-tile-action>
-            <v-icon color="teal darken-1">colorize</v-icon>
+            <v-icon color="teal darken-1">compare</v-icon>
           </v-list-tile-action>
 
           <v-list-tile-content>

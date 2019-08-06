@@ -57,6 +57,17 @@
 
           <v-window-item :value="2">
             <v-card-text>
+              <v-range-slider
+                v-model="interval"
+                color="teal darken-1"
+                always-dirty
+                thumb-label="always"
+                ticks="always"
+                step="0.1"
+                tick-size="2"
+                min="0"
+                max="2"
+              ></v-range-slider>
               <v-btn
                 block
                 :disabled="!primaryImageSelected"
@@ -64,6 +75,9 @@
                 outline
                 @click="linearTransformation()"
               >Aplicar Intervalo</v-btn>
+
+              <v-divider style="margin: 20px 20px 20px 20px; background-color: #00897b;"></v-divider>
+
               <v-btn
                 block
                 :disabled="!primaryImageSelected"
@@ -136,7 +150,8 @@ export default {
   data() {
     return {
       dialog: false,
-      step: 1
+      step: 1,
+      interval: [0, 2]
     };
   },
 
@@ -146,8 +161,8 @@ export default {
       let matrix = [];
       let imageData = null;
 
-      let intervalMaximum = 255;
-      let intervalMinimum = 0;
+      let intervalMaximum = this.interval[1] * 255;
+      let intervalMinimum = this.interval[0] * 255;
 
       let maximumRed = -Infinity;
       let minimumRed = Infinity;
@@ -405,9 +420,15 @@ export default {
           green = primaryImage.data[i * primaryImage.width * 4 + j++];
           blue = primaryImage.data[i * primaryImage.width * 4 + j++];
 
-          line.push((Math.pow(red, correction) * 255) / Math.pow(maximum, correction));
-          line.push((Math.pow(green, correction) * 255) / Math.pow(maximum, correction));
-          line.push((Math.pow(blue, correction) * 255) / Math.pow(maximum, correction));
+          line.push(
+            (Math.pow(red, correction) * 255) / Math.pow(maximum, correction)
+          );
+          line.push(
+            (Math.pow(green, correction) * 255) / Math.pow(maximum, correction)
+          );
+          line.push(
+            (Math.pow(blue, correction) * 255) / Math.pow(maximum, correction)
+          );
           line.push(primaryImage.data[i * primaryImage.width * 4 + j]);
         }
 
