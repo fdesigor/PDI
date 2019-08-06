@@ -56,11 +56,11 @@
           <v-window-item :value="2">
             <v-card-text>
               <v-range-slider
+                style="margin-left: 15px; margin-right: 15px;"
                 v-model="interval"
                 color="teal darken-1"
                 always-dirty
                 thumb-label="always"
-                ticks="always"
                 step="0.1"
                 tick-size="2"
                 min="0"
