@@ -43,7 +43,7 @@
                 :disabled="!primaryImageSelected"
                 large
                 outline
-                @click="gamaCorrection()"
+                @click="step = 4"
               >Correção Gama</v-btn>
               <v-btn
                 block
@@ -120,6 +120,26 @@
               >Quadrado</v-btn>
             </v-card-text>
           </v-window-item>
+
+          <v-window-item :value="4">
+            <v-card-text>
+              <v-slider
+                v-model="correction"
+                color="teal darken-1"
+                thumb-label="always"
+                step="0.1"
+                min="0"
+                max="2"
+              ></v-slider>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="gamaCorrection()"
+              >Aplicar Correção</v-btn>
+            </v-card-text>
+          </v-window-item>
         </v-window>
 
         <v-card-actions>
@@ -151,7 +171,8 @@ export default {
     return {
       dialog: false,
       step: 1,
-      interval: [0, 2]
+      interval: [0, 2],
+      correction: 1,
     };
   },
 
@@ -238,6 +259,7 @@ export default {
 
       this.addImage("linearTransformation", imageData);
 
+      this.interval = [0, 2];
       this.step = 1;
       this.dialog = false;
     },
@@ -391,7 +413,7 @@ export default {
       let matrix = [];
       let imageData = null;
 
-      let correction = 1.5;
+      let correction = this.correction;
 
       let maximum = -Infinity;
 
@@ -445,6 +467,7 @@ export default {
 
       this.addImage("gamaCorrection", imageData);
 
+      this.correction = 1;
       this.step = 1;
       this.dialog = false;
     },
