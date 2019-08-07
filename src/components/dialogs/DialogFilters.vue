@@ -15,9 +15,27 @@
         <v-window v-model="step">
           <v-window-item :value="1">
             <v-card-text>
-              <v-btn block :disabled="!primaryImageSelected" large outline @click="step = 2">Passa Baixa</v-btn>
-              <v-btn block :disabled="!primaryImageSelected" large outline @click="step = 6">Passa Alta</v-btn>
-              <v-btn block :disabled="!primaryImageSelected" large outline @click="step = 7">Meios Tons</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="step = 2"
+              >Passa Baixa</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="step = 6"
+              >Passa Alta</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="step = 7"
+              >Meios Tons</v-btn>
             </v-card-text>
           </v-window-item>
 
@@ -28,13 +46,19 @@
               <v-btn block :disabled="!primaryImageSelected" large outline>Máximo</v-btn>
               <v-btn block :disabled="!primaryImageSelected" large outline>Mínimo</v-btn>
               <v-btn block :disabled="!primaryImageSelected" large outline>Moda</v-btn>
-              <v-btn block :disabled="!primaryImageSelected" large outline @click="step = 5">Com Preservação de Bordas</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="step = 5"
+              >Com Preservação de Bordas</v-btn>
             </v-card-text>
           </v-window-item>
 
           <v-window-item :value="3">
             <v-card-text>
-              <v-btn block :disabled="!primaryImageSelected" large outline>3X3</v-btn>
+              <v-btn block :disabled="!primaryImageSelected" large outline @click="lowPass(3, 'average')">3X3</v-btn>
               <v-btn block :disabled="!primaryImageSelected" large outline>5X5</v-btn>
             </v-card-text>
           </v-window-item>
@@ -68,8 +92,20 @@
 
           <v-window-item :value="7">
             <v-card-text>
-              <v-btn block :disabled="!primaryImageSelected" large outline @click="step = 8">Pontilhado Ordenado</v-btn>
-              <v-btn block :disabled="!primaryImageSelected" large outline @click="step = 9">Pontilhado com Difusão</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="step = 8"
+              >Pontilhado Ordenado</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="step = 9"
+              >Pontilhado com Difusão</v-btn>
             </v-card-text>
           </v-window-item>
 
@@ -105,6 +141,8 @@
 </template>
 
 <script>
+import MatrixToArray from "../../utils/MatrixToArray";
+
 export default {
   name: "dialog-filters",
 
@@ -120,8 +158,168 @@ export default {
   data() {
     return {
       dialog: false,
-      step: 1,
+      step: 1
     };
+  },
+
+  methods: {
+    lowPass(mask, operation) {
+      let primaryImage = this.$store.state.primaryImage.data;
+      let matrix = [];
+      let imageData = null;
+
+      let convolutionMatrix = [];
+
+      for (var convolutionRow = 0; convolutionRow < mask; convolutionRow++) {
+        var row = [];
+        for (
+          var convolutionColumn = 0;
+          convolutionColumn < mask;
+          convolutionColumn++
+        ) {
+          row.push(1);
+        }
+        convolutionMatrix.push(row);
+      }
+
+      var adjustHeightConvolution = parseInt((mask - 1) / 2);
+      var adjustWidhtConvolution = parseInt((mask - 1) / 2);
+
+      for (var i = 0; i < primaryImage.height; i++) {
+        let line = [];
+        for (var j = 0; j < primaryImage.width; j++) {
+          
+          let convolutionArray = [];
+
+          for (
+            var convolutionIndexI = 0;
+            convolutionIndexI < mask;
+            convolutionIndexI++
+          ) {
+            let convolutionLine = [];
+            let convolutionPixel = 0;
+
+            for (
+              var convolutionIndexJ = 0;
+              convolutionIndexJ < mask;
+              convolutionIndexJ++
+            ) {
+              convolutionLine =
+                primaryImage.data[
+                  i + convolutionIndexI - adjustHeightConvolution
+                ];
+
+              if (convolutionLine) {
+                convolutionPixel =
+                  convolutionLine[
+                    j + convolutionIndexJ - adjustWidhtConvolution
+                  ];
+
+                if (convolutionPixel) {
+                  convolutionArray.push(convolutionPixel);
+                }
+              } else {
+                break;
+              }
+            }
+          }
+
+          let red = 0;
+          let green = 0;
+          let blue = 0;
+          let alpha = 0;
+
+          let redArray = [];
+          let greenArray = [];
+          let blueArray = [];
+          let alphaArray = [];
+
+          for (let index = 0; index < convolutionArray.length; index++) {
+            redArray.push(convolutionArray[index++]);
+            greenArray.push(convolutionArray[index++]);
+            blueArray.push(convolutionArray[index++]);
+            alphaArray.push(convolutionArray[index]);
+          }
+
+          switch (operation) {
+            case "average":
+              for (let k = 0; k < redArray.length; k++) {
+                red += redArray[k];
+              }
+
+              for (let k = 0; k < greenArray.length; k++) {
+                green += greenArray[k];
+              }
+
+              for (let k = 0; k < blueArray.length; k++) {
+                blue += blueArray[k];
+              }
+
+              for (let k = 0; k < alphaArray.length; k++) {
+                alpha += alphaArray[k];
+              }
+
+              red = red / redArray.length;
+              green = green / greenArray.length;
+              blue = blue / blueArray.length;
+              alpha = alpha / alphaArray.length;
+
+              break;
+
+            case "median":
+              break;
+
+            case "maximum":
+              break;
+
+            case "minimum":
+              break;
+
+            case "moda":
+              break;
+
+            default:
+              break;
+          }
+
+          line.push(red);
+          line.push(green);
+          line.push(blue);
+          line.push(alpha);
+        }
+
+        matrix.push(line);
+      }
+
+      let arrayFinal = new MatrixToArray(matrix);
+
+      imageData = new ImageData(
+        new Uint8ClampedArray(arrayFinal),
+        primaryImage.width,
+        primaryImage.height
+      );
+
+      this.addImage(operation, imageData);
+
+      this.dialog = false;
+    },
+
+    addImage(imageName, imageData) {
+      let canvas = document.createElement("canvas");
+      let context = canvas.getContext("2d");
+
+      canvas.width = imageData.width;
+      canvas.height = imageData.height;
+      context.putImageData(imageData, 0, 0);
+
+      this.$store.commit("PUSH_IMAGE_IN_PANEL", {
+        id: String(this.$store.state.listPanelImages.length),
+        name: `${imageName}.png`,
+        url: canvas.toDataURL(),
+        data: imageData,
+        border: String("image-noborder")
+      });
+    }
   }
 };
 </script>

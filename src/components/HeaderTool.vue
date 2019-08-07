@@ -97,10 +97,10 @@
 
 <script>
 import DialogOperations from "./dialogs/DialogOperations";
-import DialogColorSpace from "./dialogs/DialogColorSpace"
-import DialogPseudoColorization from "./dialogs/DialogPseudoColorization"
-import DialogEnhancement from "./dialogs/DialogEnhancement"
-import DialogFilters from "./dialogs/DialogFilters"
+import DialogColorSpace from "./dialogs/DialogColorSpace";
+import DialogPseudoColorization from "./dialogs/DialogPseudoColorization";
+import DialogEnhancement from "./dialogs/DialogEnhancement";
+import DialogFilters from "./dialogs/DialogFilters";
 import DialogShortcuts from "./dialogs/DialogShortcuts";
 import DialogConfigurations from "./dialogs/DialogConfigurations";
 
