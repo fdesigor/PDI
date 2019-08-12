@@ -195,11 +195,21 @@ export default {
           blue = primaryImage.data[i * primaryImage.width * 4 + j++];
 
           if (red < 128) {
-            red = green + Math.floor(Math.random()* (50 - 80) + 80)
-          } else if (green < 128) {
-            green = blue + Math.floor(Math.random()* (50 - 80) + 80)
-          } else if (blue < 128){
-            blue = red + Math.floor(Math.random()* (50 - 80) + 80)
+            red += green + Math.floor(Math.random()* (50 - 80) + 80)
+          } else {
+            red -= blue + Math.floor(Math.random()* (50 - 80) + 80)
+          } 
+          
+          if (green < 128) {
+            green += blue + Math.floor(Math.random()* (50 - 80) + 80)
+          } else {
+            green -= red + Math.floor(Math.random()* (50 - 80) + 80)
+          }
+          
+          if (blue < 128){
+            blue += red + Math.floor(Math.random()* (50 - 80) + 80)
+          } else {
+            blue -= green + Math.floor(Math.random()* (50 - 80) + 80)
           }
 
           lineColorization.push(red);
