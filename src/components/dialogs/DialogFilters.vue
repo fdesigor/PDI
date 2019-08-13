@@ -58,7 +58,13 @@
 
           <v-window-item :value="3">
             <v-card-text>
-              <v-btn block :disabled="!primaryImageSelected" large outline @click="lowPass(3, 'average')">3X3</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="lowPass(3, 'average')"
+              >3X3</v-btn>
               <v-btn block :disabled="!primaryImageSelected" large outline>5X5</v-btn>
             </v-card-text>
           </v-window-item>
@@ -170,56 +176,36 @@ export default {
 
       let convolutionMatrix = [];
 
-      for (var convolutionRow = 0; convolutionRow < mask; convolutionRow++) {
-        var row = [];
-        for (
-          var convolutionColumn = 0;
-          convolutionColumn < mask;
-          convolutionColumn++
-        ) {
-          row.push(1);
+      for (let i = 0; i < primaryImage.height; i++) {
+        let row = [];
+        for (let j = 0; j < primaryImage.width; j++) {
+          row.push(primaryImage.data[i * primaryImage.width * 4 + j++]);
         }
         convolutionMatrix.push(row);
       }
 
-      var adjustHeightConvolution = parseInt((mask - 1) / 2);
-      var adjustWidhtConvolution = parseInt((mask - 1) / 2);
-
-      for (var i = 0; i < primaryImage.height; i++) {
+      for (let i = 0; i < primaryImage.height; i++) {
         let line = [];
-        for (var j = 0; j < primaryImage.width; j++) {
-          
+        for (let j = 0; j < primaryImage.width; j++) {
           let convolutionArray = [];
 
           for (
-            var convolutionIndexI = 0;
-            convolutionIndexI < mask;
+            let convolutionIndexI = -1;
+            convolutionIndexI <= 1;
             convolutionIndexI++
           ) {
-            let convolutionLine = [];
+            let convolutionLine = convolutionMatrix[i + convolutionIndexI];
             let convolutionPixel = 0;
 
             for (
-              var convolutionIndexJ = 0;
-              convolutionIndexJ < mask;
+              let convolutionIndexJ = -1;
+              convolutionIndexJ <= 1;
               convolutionIndexJ++
             ) {
-              convolutionLine =
-                primaryImage.data[
-                  i + convolutionIndexI - adjustHeightConvolution
-                ];
+              convolutionPixel = convolutionLine[j + convolutionIndexJ];
 
-              if (convolutionLine) {
-                convolutionPixel =
-                  convolutionLine[
-                    j + convolutionIndexJ - adjustWidhtConvolution
-                  ];
-
-                if (convolutionPixel) {
-                  convolutionArray.push(convolutionPixel);
-                }
-              } else {
-                break;
+              if (convolutionPixel) {
+                convolutionArray.push(convolutionPixel);
               }
             }
           }
@@ -262,7 +248,8 @@ export default {
               red = red / redArray.length;
               green = green / greenArray.length;
               blue = blue / blueArray.length;
-              alpha = alpha / alphaArray.length;
+              // alpha = alpha / alphaArray.length;
+              alpha = 255;
 
               break;
 
@@ -290,6 +277,8 @@ export default {
 
         matrix.push(line);
       }
+
+      console.log(matrix);
 
       let arrayFinal = new MatrixToArray(matrix);
 

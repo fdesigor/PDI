@@ -62,9 +62,9 @@
                 always-dirty
                 thumb-label="always"
                 step="0.1"
-                tick-size="2"
+                tick-size="1"
                 min="0"
-                max="2"
+                max="1"
               ></v-range-slider>
               <v-btn
                 block
@@ -171,7 +171,7 @@ export default {
     return {
       dialog: false,
       step: 1,
-      interval: [0, 2],
+      interval: [0, 1],
       correction: 1,
     };
   },
