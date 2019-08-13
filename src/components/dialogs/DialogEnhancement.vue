@@ -413,7 +413,7 @@ export default {
       let matrix = [];
       let imageData = null;
 
-      let correction = this.correction;
+      let correction = 2 - this.correction;
 
       let maximum = -Infinity;
 

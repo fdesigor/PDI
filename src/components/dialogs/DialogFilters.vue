@@ -43,9 +43,27 @@
             <v-card-text>
               <v-btn block :disabled="!primaryImageSelected" large outline @click="step = 3">Média</v-btn>
               <v-btn block :disabled="!primaryImageSelected" large outline @click="step = 4">Mediana</v-btn>
-              <v-btn block :disabled="!primaryImageSelected" large outline>Máximo</v-btn>
-              <v-btn block :disabled="!primaryImageSelected" large outline>Mínimo</v-btn>
-              <v-btn block :disabled="!primaryImageSelected" large outline>Moda</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="lowPass(3, 'maximum')"
+              >Máximo</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="lowPass(3, 'minimum')"
+              >Mínimo</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="lowPass(3, 'moda')"
+              >Moda</v-btn>
               <v-btn
                 block
                 :disabled="!primaryImageSelected"
@@ -65,14 +83,74 @@
                 outline
                 @click="lowPass(3, 'average')"
               >3X3</v-btn>
-              <v-btn block :disabled="!primaryImageSelected" large outline>5X5</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="lowPass(5, 'average')"
+              >5X5</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="lowPass(7, 'average')"
+              >7X7</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="lowPass(9, 'average')"
+              >9X9</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="lowPass(11, 'average')"
+              >11X11</v-btn>
             </v-card-text>
           </v-window-item>
 
           <v-window-item :value="4">
             <v-card-text>
-              <v-btn block :disabled="!primaryImageSelected" large outline>3X3</v-btn>
-              <v-btn block :disabled="!primaryImageSelected" large outline>5X5</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="lowPass(3, 'median')"
+              >3X3</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="lowPass(5, 'median')"
+              >5X5</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="lowPass(7, 'median')"
+              >7X7</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="lowPass(9, 'median')"
+              >9X9</v-btn>
+              <v-btn
+                block
+                :disabled="!primaryImageSelected"
+                large
+                outline
+                @click="lowPass(11, 'median')"
+              >11X11</v-btn>
             </v-card-text>
           </v-window-item>
 
@@ -178,34 +256,44 @@ export default {
 
       for (let i = 0; i < primaryImage.height; i++) {
         let row = [];
-        for (let j = 0; j < primaryImage.width; j++) {
-          row.push(primaryImage.data[i * primaryImage.width * 4 + j++]);
+        for (let j = 0; j < primaryImage.width * 4; j++) {
+          row.push(primaryImage.data[i * primaryImage.width * 4 + j]);
         }
         convolutionMatrix.push(row);
       }
 
       for (let i = 0; i < primaryImage.height; i++) {
         let line = [];
-        for (let j = 0; j < primaryImage.width; j++) {
-          let convolutionArray = [];
+
+        for (let j = 0; j < primaryImage.width * 4; j += 4) {
+          let redArray = [];
+          let greenArray = [];
+          let blueArray = [];
+          let alphaArray = [];
 
           for (
-            let convolutionIndexI = -1;
-            convolutionIndexI <= 1;
-            convolutionIndexI++
+            let convolutionIndexI = -1 * parseInt(mask / 2);
+            convolutionIndexI <= parseInt(mask / 2);
+            convolutionIndexI += parseInt(mask / 2)
           ) {
-            let convolutionLine = convolutionMatrix[i + convolutionIndexI];
-            let convolutionPixel = 0;
+            let convolutionLine = [];
 
             for (
-              let convolutionIndexJ = -1;
-              convolutionIndexJ <= 1;
-              convolutionIndexJ++
+              let convolutionIndexJ = -1 * parseInt(mask / 2) * 4;
+              convolutionIndexJ <= parseInt(mask / 2) * 4;
+              convolutionIndexJ += parseInt(mask / 2) * 4
             ) {
-              convolutionPixel = convolutionLine[j + convolutionIndexJ];
+              convolutionLine = convolutionMatrix[i + convolutionIndexI];
 
-              if (convolutionPixel) {
-                convolutionArray.push(convolutionPixel);
+              if (convolutionLine) {
+                if (convolutionLine[j + convolutionIndexJ]) {
+                  redArray.push(convolutionLine[j + convolutionIndexJ]);
+                  greenArray.push(convolutionLine[j + convolutionIndexJ + 1]);
+                  blueArray.push(convolutionLine[j + convolutionIndexJ + 2]);
+                  alphaArray.push(convolutionLine[j + convolutionIndexJ + 3]);
+                }
+              } else {
+                break;
               }
             }
           }
@@ -214,18 +302,6 @@ export default {
           let green = 0;
           let blue = 0;
           let alpha = 0;
-
-          let redArray = [];
-          let greenArray = [];
-          let blueArray = [];
-          let alphaArray = [];
-
-          for (let index = 0; index < convolutionArray.length; index++) {
-            redArray.push(convolutionArray[index++]);
-            greenArray.push(convolutionArray[index++]);
-            blueArray.push(convolutionArray[index++]);
-            alphaArray.push(convolutionArray[index]);
-          }
 
           switch (operation) {
             case "average":
@@ -245,24 +321,132 @@ export default {
                 alpha += alphaArray[k];
               }
 
-              red = red / redArray.length;
-              green = green / greenArray.length;
-              blue = blue / blueArray.length;
-              // alpha = alpha / alphaArray.length;
-              alpha = 255;
-
+              red = Math.floor(red / redArray.length);
+              green = Math.floor(green / greenArray.length);
+              blue = Math.floor(blue / blueArray.length);
+              alpha = Math.floor(alpha / alphaArray.length);
               break;
 
             case "median":
+              redArray.sort();
+              greenArray.sort();
+              blueArray.sort();
+              alphaArray.sort();
+
+              red = redArray[Math.ceil(redArray.length / 2)];
+              green = greenArray[Math.ceil(greenArray.length / 2)];
+              blue = blueArray[Math.ceil(blueArray.length / 2)];
+              alpha = alphaArray[Math.ceil(alphaArray.length / 2)];
               break;
 
             case "maximum":
+              redArray.sort();
+              greenArray.sort();
+              blueArray.sort();
+              alphaArray.sort();
+
+              red = redArray[redArray.length - 1];
+              green = greenArray[greenArray.length - 1];
+              blue = blueArray[blueArray.length - 1];
+              alpha = alphaArray[alphaArray.length - 1];
               break;
 
             case "minimum":
+              redArray.sort();
+              greenArray.sort();
+              blueArray.sort();
+              alphaArray.sort();
+
+              red = redArray[0];
+              green = greenArray[0];
+              blue = blueArray[0];
+              alpha = alphaArray[0];
               break;
 
             case "moda":
+              let countDuplicatesValues = 0;
+              let num = 0;
+
+              red = redArray[0];
+
+              for (let k = 0; k < redArray.length; k++) {
+                for (let l = k; l < redArray.length; l++) {
+                  if(redArray[k] === redArray[l]){
+                    countDuplicatesValues++
+                  }
+                }
+
+                if (countDuplicatesValues > num) {
+                  red = redArray[k];
+                  num = countDuplicatesValues  
+                }
+
+                countDuplicatesValues = 0
+                
+              }
+
+              countDuplicatesValues = 0;
+              num = 0;
+
+              green = greenArray[0];
+
+              for (let k = 0; k < greenArray.length; k++) {
+                for (let l = k; l < greenArray.length; l++) {
+                  if(greenArray[k] === greenArray[l]){
+                    countDuplicatesValues++
+                  }
+                }
+
+                if (countDuplicatesValues > num) {
+                  green = greenArray[k];
+                  num = countDuplicatesValues  
+                }
+
+                countDuplicatesValues = 0
+                
+              }
+
+              countDuplicatesValues = 0;
+              num = 0;
+
+              blue = blueArray[0];
+
+              for (let k = 0; k < blueArray.length; k++) {
+                for (let l = k; l < blueArray.length; l++) {
+                  if(blueArray[k] === blueArray[l]){
+                    countDuplicatesValues++
+                  }
+                }
+
+                if (countDuplicatesValues > num) {
+                  blue = blueArray[k];
+                  num = countDuplicatesValues  
+                }
+
+                countDuplicatesValues = 0
+                
+              }
+
+              countDuplicatesValues = 0;
+              num = 0;
+
+              alpha = alphaArray[0];
+
+              for (let k = 0; k < alphaArray.length; k++) {
+                for (let l = k; l < alphaArray.length; l++) {
+                  if(alphaArray[k] === alphaArray[l]){
+                    countDuplicatesValues++
+                  }
+                }
+
+                if (countDuplicatesValues > num) {
+                  alpha = alphaArray[k];
+                  num = countDuplicatesValues  
+                }
+
+                countDuplicatesValues = 0
+                
+              }
               break;
 
             default:
@@ -274,11 +458,8 @@ export default {
           line.push(blue);
           line.push(alpha);
         }
-
         matrix.push(line);
       }
-
-      console.log(matrix);
 
       let arrayFinal = new MatrixToArray(matrix);
 
